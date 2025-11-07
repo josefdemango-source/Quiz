@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Interativo</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-container">
+
+    <section id="start-container" class="screen active">
+      <h1>🎓 Quiz</h1>
+      <input type="text" id="player-name" placeholder="Digite seu nome..." />
+      <label for="nivel">Escolha o nível:</label>
+      <select id="nivel">
+        <option value="Fundamental">Fundamental</option>
+        <option value="Médio">Médio</option>
+        <option value="Faculdade">Faculdade</option>
+      </select>
+      <button id="start-btn">Iniciar</button>
+      <button id="view-ranking" class="sec-btn">🏆 Ver Ranking</button>
+    </section>
+
+
+    <section id="quiz-container" class="screen">
+      <h2 id="question"></h2>
+      <div id="answer-buttons" class="btn-container"></div>
+      <div class="info">
+        <span id="score-counter">Pontos: 0</span>
+        <span>⏱️ <span id="time">15</span>s</span>
+      </div>
+      <button id="next-btn">Próxima</button>
+    </section>
+
+   
+    <section id="ranking-container" class="screen">
+      <h2>🏆 Ranking Top 5</h2>
+      <ul id="ranking-list"></ul>
+      <button id="back-btn">⬅️ Voltar</button>
+    </section>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

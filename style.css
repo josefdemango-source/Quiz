@@ -1,0 +1,112 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Poppins", sans-serif;
+}
+
+body {
+  background: linear-gradient(135deg, #3b82f6, #9333ea);
+  color: #fff;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
+
+.app-container {
+  width: 90%;
+  max-width: 400px;
+  background: rgba(0, 0, 0, 0.25);
+  padding: 30px;
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
+  text-align: center;
+  transition: all 0.3s ease-in-out;
+}
+
+.screen {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.screen.active {
+  display: flex;
+  opacity: 1;
+  transform: scale(1);
+}
+
+h1, h2 {
+  margin-bottom: 15px;
+}
+
+input, select {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  width: 100%;
+  margin-bottom: 10px;
+  outline: none;
+  font-size: 16px;
+}
+
+button {
+  background: #06b6d4;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  padding: 10px 15px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #0891b2;
+  transform: scale(1.05);
+}
+
+.sec-btn {
+  background: #f59e0b;
+}
+
+.btn-container {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.btn-container button {
+  background: #1e293b;
+  border: 2px solid transparent;
+}
+
+.btn-container button:hover {
+  border-color: #38bdf8;
+}
+
+.info {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+}
+
+#ranking-list {
+  list-style: none;
+  width: 100%;
+  text-align: left;
+  padding-left: 0;
+}
+
+#ranking-list li {
+  background: rgba(255,255,255,0.1);
+  margin: 5px 0;
+  padding: 8px;
+  border-radius: 8px;
+}

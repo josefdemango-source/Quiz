@@ -110,3 +110,29 @@ button:hover {
   padding: 8px;
   border-radius: 8px;
 }
+
+/* Créditos */
+.creditos {
+  margin-top: 25px;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.8);
+  text-align: center;
+  animation: fadeIn 1s ease-in-out;
+}
+
+.creditos strong {
+  color: #38bdf8;
+}
+
+.creditos p {
+  background: rgba(255, 255, 255, 0.08);
+  padding: 8px;
+  border-radius: 10px;
+  display: inline-block;
+  backdrop-filter: blur(3px);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

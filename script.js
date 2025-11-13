@@ -1,238 +1,364 @@
-// ---------------- ELEMENTOS ----------------
+/JS === QUIZ INTERATIVO COMPLETO COM CONQUISTAS, FEEDBACK, HISTÓRICO E RANKING ===
+
+// --- Variáveis ---
+let currentQuestionIndex = 0;
+let score = 0;
+let timeAtStart = 45;
+let timeLeft = timeAtStart;
+let timer = null;
+let selectedLevel = "";
+let shuffledQuestions = [];
+const totalQuestions = 20;
+let answered = false;
+let correctStreak = 0;
+
+// --- Elementos DOM ---
 const startContainer = document.getElementById("start-container");
 const quizContainer = document.getElementById("quiz-container");
 const rankingContainer = document.getElementById("ranking-container");
-
-const playerNameInput = document.getElementById("player-name");
+const questionElement = document.getElementById("question");
+const answerButtons = document.getElementById("answer-buttons");
+const nextButton = document.getElementById("next-btn");
+const timeDisplay = document.getElementById("time");
+const scoreCounter = document.getElementById("score-counter");
 const nivelSelect = document.getElementById("nivel");
 const startBtn = document.getElementById("start-btn");
 const viewRankingBtn = document.getElementById("view-ranking");
 const backBtn = document.getElementById("back-btn");
-const questionElement = document.getElementById("question");
-const answerButtons = document.getElementById("answer-buttons");
-const nextButton = document.getElementById("next-btn");
-const scoreCounter = document.getElementById("score-counter");
-const timerDisplay = document.getElementById("time");
 const rankingList = document.getElementById("ranking-list");
-
-// ---------------- VARIÁVEIS ----------------
-let currentQuestionIndex = 0;
-let score = 0;
-let playerName = "";
-let selectedLevel = "";
-let timer;
-let timeLeft = 45;
-let shuffledQuestions = [];
-let timeAtStart = 45;
-
-// ---------------- PERGUNTAS ----------------
+const playerNameInput = document.getElementById("player-name");
+const streakDisplay = document.createElement("div");
 const questions = {
-  "Fundamental": [
-    { question: "Quanto é 5 + 3?", answers: ["6", "7", "8", "9"], correct: 2 },
-    { question: "Qual o plural de 'pão'?", answers: ["pãos", "pães", "pões", "paes"], correct: 1 },
-    { question: "Qual é o maior planeta do Sistema Solar?", answers: ["Terra", "Júpiter", "Saturno", "Vênus"], correct: 1 },
-    { question: "Qual é o oposto de 'alegre'?", answers: ["triste", "feliz", "raivoso", "calmo"], correct: 0 },
-    { question: "Em que continente está o Brasil?", answers: ["Europa", "Ásia", "América do Sul", "África"], correct: 2 },
-    { question: "Quantos lados tem um triângulo?", answers: ["2", "3", "4", "5"], correct: 1 },
-    { question: "Qual é a capital do Brasil?", answers: ["São Paulo", "Brasília", "Rio de Janeiro", "Salvador"], correct: 1 },
-    { question: "Qual animal é conhecido como o rei da selva?", answers: ["Tigre", "Elefante", "Leão", "Gorila"], correct: 2 },
-    { question: "Qual é o resultado de 9 x 9?", answers: ["81", "72", "99", "90"], correct: 0 },
-    { question: "Qual desses é um mamífero?", answers: ["Sapo", "Tubarão", "Golfinho", "Cobra"], correct: 2 },
-    { question: "Quem descobriu o Brasil?", answers: ["Pedro Álvares Cabral", "Dom Pedro I", "Cristóvão Colombo", "Vasco da Gama"], correct: 0 },
-    { question: "Quantos segundos tem 1 minuto?", answers: ["30", "60", "100", "90"], correct: 1 },
-    { question: "Qual é o menor continente?", answers: ["África", "Oceania", "Europa", "Antártida"], correct: 1 },
-    { question: "O que usamos para medir temperatura?", answers: ["Régua", "Balança", "Termômetro", "Relógio"], correct: 2 },
-    { question: "O Sol é uma:", answers: ["Estrela", "Lua", "Planeta", "Cometa"], correct: 0 },
-    { question: "Quantas cores tem o arco-íris?", answers: ["5", "6", "7", "8"], correct: 2 },
-    { question: "Qual é o nome do satélite natural da Terra?", answers: ["Marte", "Lua", "Sol", "Vênus"], correct: 1 },
-    { question: "Quantos meses tem um ano?", answers: ["10", "11", "12", "13"], correct: 2 },
-    { question: "Quem é o autor de 'O Pequeno Príncipe'?", answers: ["Monteiro Lobato", "Antoine de Saint-Exupéry", "Machado de Assis", "J. K. Rowling"], correct: 1 },
-    { question: "Qual desses é um instrumento musical?", answers: ["Tesoura", "Violão", "Panela", "Lápis"], correct: 1 }
+  Fundamental: [
+    { question: "Quanto é 2 + 2?", answers: ["3", "4", "5", "6"], correct: 1, feedback: "2 + 2 é 4, simples matemática básica." },
+    { question: "Qual é a capital do Brasil?", answers: ["São Paulo", "Rio", "Brasília", "Salvador"], correct: 2, feedback: "Brasília é a capital do Brasil desde 1960." },
+    { question: "Quantas cores há no semáforo?", answers: ["2", "3", "4", "5"], correct: 1, feedback: "O semáforo possui 3 cores: vermelho, amarelo e verde." },
+    { question: "O Sol é uma...", answers: ["Estrela", "Lua", "Galáxia", "Nebulosa"], correct: 0, feedback: "O Sol é uma estrela e a nossa principal fonte de energia." },
+    { question: "Quanto é 10 ÷ 2?", answers: ["3", "4", "5", "6"], correct: 2, feedback: "10 dividido por 2 é igual a 5." },
+    { question: "Qual animal mia?", answers: ["Cachorro", "Gato", "Pássaro", "Sapo"], correct: 1, feedback: "Gatos são os animais que miam." },
+    { question: "Que cor resulta de azul + amarelo?", answers: ["Verde", "Roxo", "Laranja", "Marrom"], correct: 0, feedback: "Azul e amarelo misturados produzem verde." },
+    { question: "Quantos dias há em uma semana?", answers: ["5", "6", "7", "8"], correct: 2, feedback: "Uma semana tem 7 dias." },
+    { question: "Qual o maior planeta do sistema solar?", answers: ["Terra", "Marte", "Júpiter", "Saturno"], correct: 2, feedback: "Júpiter é o maior planeta do sistema solar." },
+    { question: "Quem descobriu o Brasil?", answers: ["Cabral", "Colombo", "Newton", "Einstein"], correct: 0, feedback: "Pedro Álvares Cabral descobriu o Brasil em 1500." },
+    { question: "Qual é o plural de 'flor'?", answers: ["flores", "flors", "floris", "flóres"], correct: 0, feedback: "O plural de flor é flores." },
+    { question: "Quantas patas tem uma aranha?", answers: ["6", "8", "10", "12"], correct: 1, feedback: "Aranhas possuem 8 patas." },
+    { question: "Qual destes é um mamífero?", answers: ["Cobra", "Sapo", "Golfinho", "Peixe"], correct: 2, feedback: "Golfinhos são mamíferos aquáticos." },
+    { question: "Qual a cor do céu em dia claro?", answers: ["Azul", "Preto", "Roxo", "Cinza"], correct: 0, feedback: "O céu geralmente é azul em dias claros." },
+    { question: "Qual instrumento mede temperatura?", answers: ["Barômetro", "Termômetro", "Anemômetro", "Régua"], correct: 1, feedback: "O termômetro mede a temperatura." },
+    { question: "Quantos meses tem um ano?", answers: ["10", "11", "12", "13"], correct: 2, feedback: "O ano possui 12 meses." },
+    { question: "Quantos segundos tem um minuto?", answers: ["30", "60", "90", "100"], correct: 1, feedback: "Um minuto possui 60 segundos." },
+    { question: "Qual destes é um meio de transporte?", answers: ["Carro", "Casa", "Mesa", "Cadeira"], correct: 0, feedback: "O carro é um meio de transporte." },
+    { question: "O que usamos para escrever?", answers: ["Papel", "Caneta", "Tesoura", "Régua"], correct: 1, feedback: "Usamos a caneta para escrever." },
+    { question: "Quantos continentes existem?", answers: ["4", "5", "6", "7"], correct: 3, feedback: "Existem 7 continentes na Terra." }
   ],
-  "Médio": [
-    { question: "Quem formulou a Teoria da Relatividade?", answers: ["Einstein", "Newton", "Tesla", "Bohr"], correct: 0 },
-    { question: "Qual é o elemento químico representado por 'O'?", answers: ["Ouro", "Oxigênio", "Ósmio", "Ozônio"], correct: 1 },
-    { question: "O que é um polígono?", answers: ["Animal", "Forma geométrica", "Número", "Planeta"], correct: 1 },
-    { question: "Quem escreveu Dom Casmurro?", answers: ["Machado de Assis", "José de Alencar", "Clarice Lispector", "Drummond"], correct: 0 },
-    { question: "Qual a fórmula da água?", answers: ["H2O", "CO2", "NaCl", "O2"], correct: 0 },
-    { question: "Em que ano o Brasil foi descoberto?", answers: ["1492", "1500", "1822", "1889"], correct: 1 },
-    { question: "Quantos ossos tem o corpo humano?", answers: ["106", "206", "306", "406"], correct: 1 },
-    { question: "Qual é o valor de π (pi) aproximado?", answers: ["2,14", "3,14", "4,14", "1,14"], correct: 1 },
-    { question: "Quem pintou a Mona Lisa?", answers: ["Michelangelo", "Leonardo da Vinci", "Rafael", "Donatello"], correct: 1 },
-    { question: "Qual é a capital da França?", answers: ["Londres", "Paris", "Roma", "Berlim"], correct: 1 },
-    { question: "O que significa 'WWW'?", answers: ["World Wide Web", "World Web Work", "Wide World Web", "Web World Work"], correct: 0 },
-    { question: "Qual é o símbolo químico do ferro?", answers: ["Ir", "Fe", "Fi", "Fo"], correct: 1 },
-    { question: "Quem foi o primeiro imperador do Brasil?", answers: ["Dom Pedro II", "Dom Pedro I", "Getúlio Vargas", "Cabral"], correct: 1 },
-    { question: "Qual desses é um gás nobre?", answers: ["Oxigênio", "Argônio", "Hidrogênio", "Nitrogênio"], correct: 1 },
-    { question: "Qual desses números é primo?", answers: ["4", "6", "7", "8"], correct: 2 },
-    { question: "Qual planeta é conhecido como o Planeta Vermelho?", answers: ["Vênus", "Terra", "Marte", "Netuno"], correct: 2 },
-    { question: "O que é fotossíntese?", answers: ["Respiração", "Processo das plantas para obter energia", "Transpiração", "Digestão"], correct: 1 },
-    { question: "Quem descobriu a gravidade?", answers: ["Einstein", "Newton", "Galileu", "Pascal"], correct: 1 },
-    { question: "Qual é a fórmula da velocidade média?", answers: ["v = t/d", "v = d/t", "v = d + t", "v = d - t"], correct: 1 },
-    { question: "Qual é a capital do Japão?", answers: ["Tóquio", "Pequim", "Seul", "Bangcoc"], correct: 0 }
+
+  Médio: [
+    { question: "Quem formulou a Teoria da Relatividade?", answers: ["Einstein", "Newton", "Tesla", "Galileu"], correct: 0, feedback: "Albert Einstein formulou a Teoria da Relatividade." },
+    { question: "Qual o símbolo químico do Ouro?", answers: ["Ag", "Au", "O", "G"], correct: 1, feedback: "O símbolo do ouro é Au." },
+    { question: "O que é mitose?", answers: ["Divisão celular", "Digestão", "Respiração", "Reprodução"], correct: 0, feedback: "Mitose é a divisão celular que gera duas células iguais." },
+    { question: "Qual é o maior osso do corpo humano?", answers: ["Fêmur", "Tíbia", "Úmero", "Costela"], correct: 0, feedback: "O fêmur é o maior osso do corpo humano." },
+    { question: "A água ferve a quantos graus Celsius?", answers: ["50", "100", "150", "200"], correct: 1, feedback: "A água ferve a 100°C ao nível do mar." },
+    { question: "Quem pintou a Mona Lisa?", answers: ["Van Gogh", "Da Vinci", "Picasso", "Michelangelo"], correct: 1, feedback: "Leonardo da Vinci pintou a Mona Lisa." },
+    { question: "Qual planeta é conhecido como planeta vermelho?", answers: ["Vênus", "Terra", "Marte", "Júpiter"], correct: 2, feedback: "Marte é chamado de planeta vermelho devido ao óxido de ferro." },
+    { question: "Quem escreveu 'Dom Casmurro'?", answers: ["Machado de Assis", "José de Alencar", "Drummond", "Clarice Lispector"], correct: 0, feedback: "Machado de Assis é o autor de 'Dom Casmurro'." },
+    { question: "Qual é a raiz quadrada de 144?", answers: ["10", "11", "12", "13"], correct: 2, feedback: "A raiz quadrada de 144 é 12." },
+    { question: "Qual continente é o maior?", answers: ["África", "América", "Ásia", "Europa"], correct: 2, feedback: "A Ásia é o maior continente em área." },
+    { question: "Qual o principal gás do ar?", answers: ["Oxigênio", "Nitrogênio", "Hélio", "CO₂"], correct: 1, feedback: "O nitrogênio é o gás mais presente na atmosfera (~78%)." },
+    { question: "Qual é o autor de 'Os Lusíadas'?", answers: ["Camões", "Pessoa", "Almeida", "Machado"], correct: 0, feedback: "Luís de Camões escreveu 'Os Lusíadas'." },
+    { question: "O DNA tem formato de?", answers: ["Espiral dupla", "Círculo", "Quadrado", "Helicóptero"], correct: 0, feedback: "O DNA tem a forma de dupla hélice." },
+    { question: "O Sol nasce em qual direção?", answers: ["Norte", "Sul", "Leste", "Oeste"], correct: 2, feedback: "O Sol nasce no Leste." },
+    { question: "Qual a capital da França?", answers: ["Berlim", "Madri", "Paris", "Lisboa"], correct: 2, feedback: "Paris é a capital da França." },
+    { question: "Quantos cromossomos humanos temos?", answers: ["44", "46", "48", "50"], correct: 1, feedback: "O ser humano possui 46 cromossomos." },
+    { question: "Quem foi o primeiro presidente do Brasil?", answers: ["Getúlio Vargas", "Deodoro da Fonseca", "Dom Pedro II", "Lula"], correct: 1, feedback: "Deodoro da Fonseca foi o primeiro presidente do Brasil." },
+    { question: "Qual elemento químico é H₂O?", answers: ["Água", "Oxigênio", "Hidrogênio", "Ácido"], correct: 0, feedback: "H₂O é a fórmula química da água." },
+    { question: "O que mede a Escala Richter?", answers: ["Vento", "Terremotos", "Temperatura", "Velocidade"], correct: 1, feedback: "A Escala Richter mede a magnitude de terremotos." },
+    { question: "Quem descobriu a gravidade?", answers: ["Einstein", "Newton", "Galileu", "Curie"], correct: 1, feedback: "Isaac Newton descobriu a gravidade ao observar a maçã cair." }
   ],
-  "Faculdade": [
-    { question: "Qual é o princípio da incerteza de Heisenberg?", answers: ["Não é possível determinar posição e velocidade ao mesmo tempo", "Toda ação tem uma reação", "A energia se conserva", "A matéria é contínua"], correct: 0 },
-    { question: "O que é Big O em ciência da computação?", answers: ["Complexidade de algoritmos", "Sistema operacional", "Tipo de dado", "Protocolo de rede"], correct: 0 },
-    { question: "Quem propôs a teoria da evolução?", answers: ["Darwin", "Lamarck", "Pasteur", "Einstein"], correct: 0 },
-    { question: "Qual linguagem é usada para estilizar páginas web?", answers: ["CSS", "HTML", "Python", "SQL"], correct: 0 },
-    { question: "O que significa 'HTTP'?", answers: ["HyperText Transfer Protocol", "High Text Type Program", "Host Transfer Table Process", "Nenhuma das anteriores"], correct: 0 },
-    { question: "O que é machine learning?", answers: ["Aprendizado de máquina", "Programação manual", "Inteligência artificial fixa", "Banco de dados"], correct: 0 },
-    { question: "Quem criou o modelo atômico moderno?", answers: ["Bohr", "Rutherford", "Dalton", "Thomson"], correct: 1 },
-    { question: "Em que ano ocorreu a Revolução Francesa?", answers: ["1789", "1804", "1776", "1815"], correct: 0 },
-    { question: "O que é um algoritmo?", answers: ["Sequência de instruções", "Equação matemática", "Dispositivo eletrônico", "Sistema nervoso"], correct: 0 },
-    { question: "Qual a unidade básica da vida?", answers: ["Átomo", "Célula", "Molécula", "Tecido"], correct: 1 },
-    { question: "Quem desenvolveu o cálculo diferencial?", answers: ["Newton e Leibniz", "Einstein e Bohr", "Pascal e Fermat", "Gauss e Euler"], correct: 0 },
-    { question: "O que faz a camada de transporte do modelo OSI?", answers: ["Gerencia conexões e dados", "Define endereços IP", "Envia pacotes físicos", "Faz cache de dados"], correct: 0 },
-    { question: "Qual é o principal gás do efeito estufa?", answers: ["CO2", "O2", "N2", "H2"], correct: 0 },
-    { question: "Qual é o teorema de Pitágoras?", answers: ["a² + b² = c²", "E = mc²", "F = ma", "PV = nRT"], correct: 0 },
-    { question: "Quem escreveu 'O Príncipe'?", answers: ["Maquiavel", "Platão", "Sócrates", "Aristóteles"], correct: 0 },
-    { question: "O que significa RAM?", answers: ["Random Access Memory", "Read All Memory", "Rapid Access Machine", "Run Active Memory"], correct: 0 },
-    { question: "Qual é a unidade de medida de energia?", answers: ["Joule", "Watt", "Newton", "Pascal"], correct: 0 },
-    { question: "O que é uma API?", answers: ["Interface de Programação de Aplicações", "Banco de Dados", "Hardware", "Sistema Operacional"], correct: 0 },
-    { question: "Quem criou o primeiro computador programável?", answers: ["Alan Turing", "Bill Gates", "Steve Jobs", "Charles Babbage"], correct: 3 },
-    { question: "O que é entropia?", answers: ["Medida de desordem de um sistema", "Energia potencial", "Força de atração", "Pressão de um gás"], correct: 0 }
+
+  Faculdade: [
+    { question: "O que é Big O em algoritmos?", answers: ["Complexidade", "Memória", "Código", "Interface"], correct: 0, feedback: "Big O indica a complexidade de um algoritmo." },
+    { question: "Quem criou o modelo atômico atual?", answers: ["Bohr", "Rutherford", "Schrödinger", "Dalton"], correct: 2, feedback: "Schrödinger propôs o modelo quântico do átomo." },
+    { question: "O que significa HTTP?", answers: ["HyperText Transfer Protocol", "Hyper Tool Transfer Port", "Host Transfer Type Protocol", "Nenhuma"], correct: 0, feedback: "HTTP é o protocolo de transferência de hipertexto usado na web." },
+    { question: "O que é um array?", answers: ["Lista de valores", "Loop", "Variável simples", "Função"], correct: 0, feedback: "Array é uma lista de valores indexados." },
+    { question: "O que é SQL?", answers: ["Linguagem de consulta", "Banco de dados", "Servidor", "Sistema operacional"], correct: 0, feedback: "SQL é uma linguagem de consulta para bancos de dados." },
+    { question: "Qual planeta tem mais luas?", answers: ["Saturno", "Júpiter", "Marte", "Urano"], correct: 1, feedback: "Júpiter possui mais de 90 luas conhecidas." },
+    { question: "Quem propôs o cálculo diferencial?", answers: ["Leibniz", "Descartes", "Pascal", "Gauss"], correct: 0, feedback: "Gottfried Leibniz propôs o cálculo diferencial." },
+    { question: "O que é machine learning?", answers: ["Aprendizado de máquina", "Engenharia civil", "Design gráfico", "Arte digital"], correct: 0, feedback: "Machine Learning é aprendizado de máquina, ensinando computadores a aprender." },
+    { question: "Qual linguagem é usada no Arduino?", answers: ["Python", "C++", "Java", "Ruby"], correct: 1, feedback: "O Arduino usa principalmente C++." },
+    { question: "Quem escreveu 'A República'?", answers: ["Platão", "Aristóteles", "Sócrates", "Descartes"], correct: 0, feedback: "Platão é o autor de 'A República'." },
+    { question: "O que faz uma função recursiva?", answers: ["Chama a si mesma", "Chama outra função", "Repete um laço", "Calcula médias"], correct: 0, feedback: "Função recursiva chama a si mesma para resolver problemas." },
+    { question: "O que é JSON?", answers: ["Formato de dados", "Protocolo", "Servidor", "Classe"], correct: 0, feedback: "JSON é um formato de dados leve usado para troca de informações." },
+    { question: "Quem desenvolveu o C?", answers: ["Dennis Ritchie", "Bjarne Stroustrup", "James Gosling", "Linus Torvalds"], correct: 0, feedback: "Dennis Ritchie criou a linguagem C." },
+    { question: "Qual unidade é usada em frequência?", answers: ["Hertz", "Joule", "Newton", "Watt"], correct: 0, feedback: "A frequência é medida em Hertz (Hz)."} ,
+    { question: "Qual é o maior número primo abaixo de 20?", answers: ["19", "17", "13", "11"], correct: 0, feedback: "O maior número primo menor que 20 é 19." },
+    { question: "O que significa IA?", answers: ["Inteligência Artificial", "Interface Automática", "Instrução Avançada", "Informação Ativa"], correct: 0, feedback: "IA significa Inteligência Artificial." },
+    { question: "Qual a fórmula da velocidade média?", answers: ["v = Δs/Δt", "v = m*a", "v = E/t", "v = F*d"], correct: 0, feedback: "Velocidade média é distância dividida pelo tempo." },
+    { question: "Quem descobriu os elétrons?", answers: ["Thomson", "Bohr", "Einstein", "Planck"], correct: 0, feedback: "J.J. Thomson descobriu os elétrons." },
+    { question: "Qual é a camada mais externa da Terra?", answers: ["Crosta", "Manto", "Núcleo", "Litosfera"], correct: 0, feedback: "A crosta é a camada externa da Terra." },
+    { question: "O que é API?", answers: ["Interface de Programação", "Protocolo de Internet", "Banco de Dados", "Função lógica"], correct: 0, feedback: "API é Interface de Programação de Aplicações." }
   ]
 };
 
-// ---------------- FUNÇÕES ----------------
-function startGame() {
-  playerName = playerNameInput.value.trim();
-  selectedLevel = nivelSelect.value;
+// --- Contador de streak ---
+streakDisplay.id = "streak-display";
+streakDisplay.textContent = "🔥 Acertos seguidos: 0";
+quizContainer.appendChild(streakDisplay);
 
-  if (playerName === "") {
-    alert("Digite seu nome!");
+// --- Barra de progresso ---
+const progressBar = document.createElement("div");
+progressBar.className = "progress-bar";
+const progressFill = document.createElement("div");
+progressFill.className = "progress-fill";
+progressBar.appendChild(progressFill);
+quizContainer.insertBefore(progressBar, questionElement);
+
+// === CONQUISTAS ===
+function showAchievement(message) {
+  const toast = document.createElement("div");
+  toast.className = "achievement-toast";
+  toast.innerHTML = `🏆 ${message}`;
+  document.body.appendChild(toast);
+  setTimeout(() => {
+    toast.style.animation = "slideOut 0.5s forwards";
+    setTimeout(() => toast.remove(), 500);
+  }, 3000);
+}
+
+// === EMBARALHAR ===
+function shuffle(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+// === INICIAR ===
+function startGame() {
+  const playerName = playerNameInput.value.trim();
+  if (!playerName) {
+    alert("Digite seu nome antes de começar!");
     return;
   }
 
-  shuffledQuestions = [...questions[selectedLevel]];
+  selectedLevel = nivelSelect.value;
+  shuffledQuestions = shuffle(questions[selectedLevel]).slice(0, totalQuestions);
   currentQuestionIndex = 0;
   score = 0;
+  correctStreak = 0;
+  answered = false;
+
+  timeAtStart =
+    selectedLevel === "Fundamental" ? 45 :
+    selectedLevel === "Médio" ? 30 : 20;
 
   startContainer.classList.remove("active");
+  rankingContainer.classList.remove("active");
   quizContainer.classList.add("active");
 
+  scoreCounter.textContent = `Pontos: ${score}`;
+  streakDisplay.textContent = `🔥 Acertos seguidos: ${correctStreak}`;
   showQuestion();
 }
 
+// === MOSTRAR PERGUNTA ===
 function showQuestion() {
-  resetState();
-
-  const currentQuestion = shuffledQuestions[currentQuestionIndex];
-  questionElement.textContent = currentQuestion.question;
-  currentQuestion.answers.forEach((ans, i) => {
-    const button = document.createElement("button");
-    button.textContent = ans;
-    button.onclick = () => selectAnswer(i);
-    answerButtons.appendChild(button);
-  });
-
-  scoreCounter.textContent = `Pontos: ${score}`;
-}
-
-function resetState() {
-  nextButton.style.display = "none";
-  answerButtons.innerHTML = "";
   clearInterval(timer);
-  timeLeft = 45;
-  timeAtStart = 45;
-  timerDisplay.textContent = timeLeft;
-  startTimer();
-}
+  answered = false;
+  timeLeft = timeAtStart;
+  timeDisplay.textContent = timeLeft;
+  updateTimerColor();
 
-function startTimer() {
   timer = setInterval(() => {
     timeLeft--;
-    timerDisplay.textContent = timeLeft;
-
+    timeDisplay.textContent = timeLeft;
+    updateTimerColor();
     if (timeLeft <= 0) {
       clearInterval(timer);
-      nextButton.style.display = "block";
+      revealCorrect();
+      nextButton.classList.remove("hidden");
+      answered = true;
     }
-  }, 1500); // tempo mais lento
-}
+  }, 1000);
 
-function selectAnswer(index) {
-  const currentQuestion = shuffledQuestions[currentQuestionIndex];
-  const correct = currentQuestion.correct;
-
-  clearInterval(timer);
-
-  if (index === correct) {
-    const pontosGanhos = 10 + timeLeft;
-    score += pontosGanhos;
+  const q = shuffledQuestions[currentQuestionIndex];
+  if (!q) {
+    endGame();
+    return;
   }
 
-  Array.from(answerButtons.children).forEach((btn, i) => {
-    btn.disabled = true;
-    if (i === correct) btn.style.background = "#16a34a";
-    else btn.style.background = "#dc2626";
+  questionElement.textContent = q.question;
+  answerButtons.innerHTML = "";
+
+  const pairs = q.answers.map((text, idx) => ({ text, idx }));
+  const shuffledPairs = shuffle(pairs);
+
+  shuffledPairs.forEach((p) => {
+    const btn = document.createElement("button");
+    btn.className = "answer-btn";
+    btn.textContent = p.text;
+    btn.addEventListener("click", () => {
+      if (answered) return;
+      handleAnswerSelection(p.idx, btn);
+    });
+    answerButtons.appendChild(btn);
   });
 
-  nextButton.style.display = "block";
+  nextButton.classList.add("hidden");
+  scoreCounter.textContent = `Pontos: ${score}`;
+  updateProgress();
 }
 
-function handleNext() {
+// === SELEÇÃO DE RESPOSTA ===
+function handleAnswerSelection(originalIndex, clickedBtn) {
+  if (answered) return;
+  answered = true;
+  clearInterval(timer);
+
+  const q = shuffledQuestions[currentQuestionIndex];
+  const correctIndex = q.correct;
+  const btns = Array.from(answerButtons.children);
+
+  btns.forEach((btn) => {
+    const idx = q.answers.indexOf(btn.textContent);
+    if (idx === correctIndex) btn.classList.add("correct");
+    else if (idx === originalIndex && idx !== correctIndex)
+      btn.classList.add("wrong");
+    btn.disabled = true;
+  });
+
+  const feedback = document.createElement("p");
+  feedback.className = "feedback";
+  feedback.textContent = q.feedback || "Boa tentativa!";
+  questionElement.appendChild(feedback);
+
+  if (originalIndex === correctIndex) {
+    let basePoints =
+      selectedLevel === "Fundamental" ? 10 :
+      selectedLevel === "Médio" ? 15 : 20;
+    score += basePoints + timeLeft;
+    correctStreak++;
+
+    if (correctStreak === 5) showAchievement("🔥 5 acertos seguidos!");
+    if (correctStreak === 10) showAchievement("💥 10 acertos seguidos!");
+    if (correctStreak === shuffledQuestions.length) showAchievement("🏆 Acertou todas!");
+  } else {
+    let penalty = 5 + correctStreak * 2;
+    score = Math.max(score - penalty, 0);
+    correctStreak = 0;
+  }
+
+  streakDisplay.textContent = `🔥 Acertos seguidos: ${correctStreak}`;
+  scoreCounter.textContent = `Pontos: ${score}`;
+  nextButton.classList.remove("hidden");
+}
+
+// === REVELAR CORRETA ===
+function revealCorrect() {
+  const q = shuffledQuestions[currentQuestionIndex];
+  Array.from(answerButtons.children).forEach((btn) => {
+    const idx = q.answers.indexOf(btn.textContent);
+    if (idx === q.correct) btn.classList.add("correct");
+    btn.disabled = true;
+  });
+}
+
+// === PRÓXIMA ===
+nextButton.addEventListener("click", () => {
   currentQuestionIndex++;
   if (currentQuestionIndex < shuffledQuestions.length) showQuestion();
   else endGame();
-}
+});
 
+// === FINAL ===
 function endGame() {
-  resetState();
-  questionElement.textContent = `${playerName}, você fez ${score} pontos! 🎯`;
-  saveRanking(playerName, selectedLevel, score);
+  clearInterval(timer);
+  quizContainer.classList.remove("active");
 
-  nextButton.textContent = "Voltar ao início";
-  nextButton.style.display = "block";
-  nextButton.onclick = () => {
-    quizContainer.classList.remove("active");
-    startContainer.classList.add("active");
-    nextButton.textContent = "Próxima";
-    nextButton.onclick = handleNext;
-    showRanking();
-  };
+  const percent = Math.round((score / (totalQuestions * 30)) * 100);
+  alert(`${playerNameInput.value}, parabéns! 🎉\nVocê fez ${score} pontos!\nAproveitamento: ${percent}%`);
+
+  saveRanking();
+  showRanking();
 }
 
-function saveRanking(name, level, score) {
-  const key = `ranking_${level}`;
-  const data = JSON.parse(localStorage.getItem(key)) || [];
-  data.push({ name, score });
+// === SALVAR RANKING TOP 3 POR NÍVEL ===
+function saveRanking() {
+  const name = playerNameInput.value.trim() || "Jogador";
+  const key = `ranking_${selectedLevel}`;
+  let data = JSON.parse(localStorage.getItem(key) || "[]");
+  const existingIndex = data.findIndex(entry => entry.name === name);
+  if (existingIndex >= 0) {
+    if (score > data[existingIndex].score) {
+      data[existingIndex].score = score;
+      data[existingIndex].date = new Date().toLocaleString();
+    }
+  } else {
+    data.push({ name, score, date: new Date().toLocaleString() });
+  }
   data.sort((a, b) => b.score - a.score);
-  localStorage.setItem(key, JSON.stringify(data.slice(0, 5)));
+  localStorage.setItem(key, JSON.stringify(data.slice(0, 3)));
 }
 
+// === MOSTRAR RANKING TOP 3 ===
 function showRanking() {
+  rankingContainer.classList.add("active");
+  startContainer.classList.remove("active");
+  quizContainer.classList.remove("active");
   rankingList.innerHTML = "";
-  ["Fundamental", "Médio", "Faculdade"].forEach(level => {
-    const rank = JSON.parse(localStorage.getItem(`ranking_${level}`)) || [];
-    const title = document.createElement("h3");
-    title.textContent = level;
-    rankingList.appendChild(title);
 
-    if (rank.length === 0) {
-      const li = document.createElement("li");
-      li.textContent = "Sem pontuações ainda";
-      rankingList.appendChild(li);
-    } else {
-      rank.forEach((r, i) => {
-        const li = document.createElement("li");
-        li.textContent = `${i + 1}º — ${r.name}: ${r.score} pontos`;
-        rankingList.appendChild(li);
+  ["Fundamental", "Médio", "Faculdade"].forEach(level => {
+    const key = `ranking_${level}`;
+    const data = JSON.parse(localStorage.getItem(key) || "[]");
+    const li = document.createElement("li");
+    li.innerHTML = `<strong>${level}:</strong><br>`;
+    if (data.length === 0) li.innerHTML += "Nenhum ranking ainda.";
+    else {
+      data.forEach((entry, i) => {
+        let medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : "";
+        li.innerHTML += `${medal} ${entry.name}: ${entry.score} pts (${entry.date})<br>`;
       });
     }
+    rankingList.appendChild(li);
   });
 }
 
-// ---------------- EVENTOS ----------------
-nextButton.onclick = handleNext;
-startBtn.onclick = startGame;
-viewRankingBtn.onclick = () => {
-  startContainer.classList.remove("active");
-  rankingContainer.classList.add("active");
-  showRanking();
-};
-backBtn.onclick = () => {
+// === BARRA DE TEMPO COLORIDA ===
+function updateTimerColor() {
+  if (timeLeft > timeAtStart * 0.6) timeDisplay.style.color = "limegreen";
+  else if (timeLeft > timeAtStart * 0.3) timeDisplay.style.color = "gold";
+  else timeDisplay.style.color = "red";
+}
+
+// === PROGRESSO ===
+function updateProgress() {
+  const pct = Math.round((currentQuestionIndex / (shuffledQuestions.length || totalQuestions)) * 100);
+  progressFill.style.width = `${pct}%`;
+}
+
+// === REINICIAR ===
+function restartQuiz() {
+  quizContainer.classList.remove("active");
+  startContainer.classList.add("active");
+}
+document.getElementById("restart-btn")?.addEventListener("click", restartQuiz);
+
+// === BOTÕES ===
+startBtn.addEventListener("click", startGame);
+viewRankingBtn.addEventListener("click", showRanking);
+backBtn.addEventListener("click", () => {
   rankingContainer.classList.remove("active");
   startContainer.classList.add("active");
+});
+
+// === TEMA CLARO/ESCURO ===
+const themeToggle = document.createElement("button");
+themeToggle.id = "theme-toggle";
+themeToggle.textContent = "🌙";
+themeToggle.className = "theme-toggle";
+document.body.appendChild(themeToggle);
+themeToggle.onclick = () => {
+  document.body.classList.toggle("dark-mode");
+  themeToggle.textContent = document.body.classList.contains("dark-mode") ? "☀️" : "🌙";
 };

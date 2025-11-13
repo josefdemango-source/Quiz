@@ -1,6 +1,3 @@
-// === QUIZ INTERATIVO COMPLETO COM CONQUISTAS, FEEDBACK, HISTÓRICO E RANKING ===
-
-// --- Variáveis ---
 let currentQuestionIndex = 0;
 let score = 0;
 let timeAtStart = 45;
@@ -12,7 +9,7 @@ const totalQuestions = 20;
 let answered = false;
 let correctStreak = 0;
 
-// --- Elementos DOM ---
+
 const startContainer = document.getElementById("start-container");
 const quizContainer = document.getElementById("quiz-container");
 const rankingContainer = document.getElementById("ranking-container");
@@ -28,6 +25,7 @@ const backBtn = document.getElementById("back-btn");
 const rankingList = document.getElementById("ranking-list");
 const playerNameInput = document.getElementById("player-name");
 const streakDisplay = document.createElement("div");
+
 const questions = {
   Fundamental: [
     { question: "Quanto é 2 + 2?", answers: ["3", "4", "5", "6"], correct: 1, feedback: "2 + 2 é 4, simples matemática básica." },
@@ -99,6 +97,7 @@ const questions = {
   ]
 };
 
+
 // --- Contador de streak ---
 streakDisplay.id = "streak-display";
 streakDisplay.textContent = "🔥 Acertos seguidos: 0";
@@ -149,6 +148,7 @@ function startGame() {
   correctStreak = 0;
   answered = false;
 
+  // Tempo por nível
   timeAtStart =
     selectedLevel === "Fundamental" ? 45 :
     selectedLevel === "Médio" ? 30 : 20;
@@ -183,10 +183,7 @@ function showQuestion() {
   }, 1000);
 
   const q = shuffledQuestions[currentQuestionIndex];
-  if (!q) {
-    endGame();
-    return;
-  }
+  if (!q) return endGame();
 
   questionElement.textContent = q.question;
   answerButtons.innerHTML = "";
@@ -206,7 +203,6 @@ function showQuestion() {
   });
 
   nextButton.classList.add("hidden");
-  scoreCounter.textContent = `Pontos: ${score}`;
   updateProgress();
 }
 
@@ -234,10 +230,20 @@ function handleAnswerSelection(originalIndex, clickedBtn) {
   questionElement.appendChild(feedback);
 
   if (originalIndex === correctIndex) {
-    let basePoints =
-      selectedLevel === "Fundamental" ? 10 :
-      selectedLevel === "Médio" ? 15 : 20;
-    score += basePoints + timeLeft;
+    let basePoints, streakBonus;
+
+    if (selectedLevel === "Fundamental") {
+      basePoints = 10;
+      streakBonus = correctStreak * 2;
+    } else if (selectedLevel === "Médio") {
+      basePoints = 20;
+      streakBonus = correctStreak * 4;
+    } else {
+      basePoints = 30;
+      streakBonus = correctStreak * 6;
+    }
+
+    score += basePoints + timeLeft + streakBonus;
     correctStreak++;
 
     if (correctStreak === 5) showAchievement("🔥 5 acertos seguidos!");
@@ -276,19 +282,20 @@ function endGame() {
   clearInterval(timer);
   quizContainer.classList.remove("active");
 
-  const percent = Math.round((score / (totalQuestions * 30)) * 100);
+  const percent = Math.round((score / (totalQuestions * 60)) * 100);
   alert(`${playerNameInput.value}, parabéns! 🎉\nVocê fez ${score} pontos!\nAproveitamento: ${percent}%`);
 
   saveRanking();
   showRanking();
 }
 
-// === SALVAR RANKING TOP 3 POR NÍVEL ===
+// === SALVAR RANKING TOP 3 ===
 function saveRanking() {
   const name = playerNameInput.value.trim() || "Jogador";
   const key = `ranking_${selectedLevel}`;
   let data = JSON.parse(localStorage.getItem(key) || "[]");
   const existingIndex = data.findIndex(entry => entry.name === name);
+
   if (existingIndex >= 0) {
     if (score > data[existingIndex].score) {
       data[existingIndex].score = score;
@@ -297,11 +304,12 @@ function saveRanking() {
   } else {
     data.push({ name, score, date: new Date().toLocaleString() });
   }
+
   data.sort((a, b) => b.score - a.score);
   localStorage.setItem(key, JSON.stringify(data.slice(0, 3)));
 }
 
-// === MOSTRAR RANKING TOP 3 ===
+// === MOSTRAR RANKING ===
 function showRanking() {
   rankingContainer.classList.add("active");
   startContainer.classList.remove("active");
@@ -324,18 +332,24 @@ function showRanking() {
   });
 }
 
-// === BARRA DE TEMPO COLORIDA ===
+// === OUTRAS FUNÇÕES ===
 function updateTimerColor() {
   if (timeLeft > timeAtStart * 0.6) timeDisplay.style.color = "limegreen";
   else if (timeLeft > timeAtStart * 0.3) timeDisplay.style.color = "gold";
   else timeDisplay.style.color = "red";
 }
 
-// === PROGRESSO ===
 function updateProgress() {
   const pct = Math.round((currentQuestionIndex / (shuffledQuestions.length || totalQuestions)) * 100);
   progressFill.style.width = `${pct}%`;
 }
+
+function restartQuiz() {
+  quizContainer.classList.remove("active");
+  startContainer.classList.add("active");
+}
+document.getElementById("restart-btn")?.addEventListener("click", restartQuiz);
+
 
 // === REINICIAR ===
 function restartQuiz() {
@@ -362,4 +376,3 @@ themeToggle.onclick = () => {
   document.body.classList.toggle("dark-mode");
   themeToggle.textContent = document.body.classList.contains("dark-mode") ? "☀️" : "🌙";
 };
-

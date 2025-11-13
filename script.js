@@ -1,6 +1,3 @@
-/JS === QUIZ INTERATIVO COMPLETO COM CONQUISTAS, FEEDBACK, HISTÓRICO E RANKING ===
-
-// --- Variáveis ---
 let currentQuestionIndex = 0;
 let score = 0;
 let timeAtStart = 45;
@@ -362,3 +359,4 @@ themeToggle.onclick = () => {
   document.body.classList.toggle("dark-mode");
   themeToggle.textContent = document.body.classList.contains("dark-mode") ? "☀️" : "🌙";
 };
+

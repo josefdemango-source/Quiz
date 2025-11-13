@@ -1,4 +1,4 @@
-
+/ === QUIZ INTERATIVO COMPLETO COM CONQUISTAS, FEEDBACK, HISTÓRICO E RANKING ===
 
 // --- Variáveis ---
 let currentQuestionIndex = 0;

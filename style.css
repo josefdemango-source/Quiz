@@ -7,6 +7,7 @@
   font-family: "Poppins", sans-serif;
 }
 
+/* ======== BASE ======== */
 body {
   background: linear-gradient(135deg, #3b82f6, #9333ea);
   color: #fff;
@@ -28,7 +29,7 @@ body {
   transition: all 0.3s ease-in-out;
 }
 
-/* ======== SCREENS ======== */
+/* ======== TELAS ======== */
 .screen {
   display: none;
   flex-direction: column;
@@ -44,6 +45,7 @@ body {
   transform: scale(1);
 }
 
+/* ======== TEXTOS E INPUTS ======== */
 h1, h2 {
   margin-bottom: 15px;
 }
@@ -58,6 +60,7 @@ input, select {
   font-size: 16px;
 }
 
+/* ======== BOTÕES ======== */
 button {
   background: #06b6d4;
   color: white;
@@ -84,15 +87,7 @@ button:hover {
   gap: 8px;
 }
 
-.btn-container button {
-  background: #fffffff7;
-  border: 2px solid transparent;
-}
-
-.btn-container button:hover {
-  border-color: #38bdf8;
-}
-
+/* ======== BOTÕES DE RESPOSTA ======== */
 .answer-btn {
   display: block;
   width: 100%;
@@ -136,6 +131,7 @@ button:hover {
   display: none !important;
 }
 
+/* ======== BARRA DE TEMPO ======== */
 .progress-bar {
   width: 100%;
   height: 8px;
@@ -168,36 +164,65 @@ button:hover {
 }
 
 #ranking-list li {
-  background: rgba(255,255,255,0.1);
-  margin: 5px 0;
-  padding: 8px;
-  border-radius: 8px;
-}
-
-#ranking-list li:nth-child(1) {
-  background: gold;
-  color: #000;
-  font-weight: bold;
-  border: 2px solid #f59e0b;
-  box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
-}
-
-#ranking-list li:nth-child(2) {
-  background: silver;
-  color: #000;
-  font-weight: bold;
-  border: 2px solid #c0c0c0;
-  box-shadow: 0 0 10px rgba(192, 192, 192, 0.6);
-}
-
-#ranking-list li:nth-child(3) {
-  background: #cd7f32;
+  background: linear-gradient(135deg, #6366f1, #a855f7);
   color: #fff;
-  font-weight: bold;
-  border: 2px solid #b87333;
-  box-shadow: 0 0 10px rgba(184, 115, 51, 0.6);
+  font-weight: 600;
+  border: 2px solid rgba(255, 255, 255, 0.25);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.15);
+  padding: 12px;
+  margin: 8px 0;
+  border-radius: 12px;
+  text-align: center;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease;
 }
 
+#ranking-list li:hover {
+  transform: scale(1.04);
+  background: linear-gradient(135deg, #facc15, #f59e0b);
+  color: #000;
+  box-shadow: 0 0 18px rgba(250, 204, 21, 0.6);
+  border-color: rgba(250, 204, 21, 0.8);
+}
+
+/* ======== CONQUISTAS ======== */
+.achievement-toast {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #333;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  opacity: 0;
+  transform: translateX(100%);
+  pointer-events: none;
+  box-shadow: 0 0 10px #000;
+  border: 2px solid gold;
+  animation: slideIn 0.5s forwards;
+}
+
+.achievement-toast.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* ======== ANIMAÇÕES ======== */
+@keyframes slideIn {
+  from { transform: translateX(100%); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* ======== CRÉDITOS ======== */
 .creditos {
   margin-top: 25px;
   font-size: 14px;
@@ -218,6 +243,7 @@ button:hover {
   backdrop-filter: blur(3px);
 }
 
+/* ======== BOTÃO DE TEMA ======== */
 #theme-toggle {
   position: fixed;
   top: 15px;
@@ -236,6 +262,7 @@ button:hover {
   transform: scale(1.15);
 }
 
+/* ======== MODO ESCURO ======== */
 body.dark-mode {
   background: linear-gradient(135deg, #111827, #312e81);
   color: #e5e7eb;
@@ -255,57 +282,14 @@ body.dark-mode .answer-btn {
 body.dark-mode .answer-btn.correct {
   background: #16a34a !important;
   color: #fff !important;
-  border-color: #14532d !important;
 }
 
 body.dark-mode .answer-btn.wrong {
   background: #dc2626 !important;
   color: #fff !important;
-  border-color: #7f1d1d !important;
 }
 
-.achievement-toast {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: #333;
-  color: #fff;
-  padding: 12px 18px;
-  border-radius: 6px;
-  font-weight: bold;
-  font-size: 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  opacity: 0;
-  transform: translateX(100%);
-  pointer-events: none;
-  box-shadow: 0 0 10px #000;
-  border: 2px solid gold;
-  animation: slideIn 0.5s forwards;
-  font-family: "Poppins", sans-serif;
-}
-
-.achievement-toast.show {
-  opacity: 1;
-  transform: translateX(0);
-}
-
-@keyframes slideIn {
-  from { transform: translateX(100%); opacity: 0; }
-  to { transform: translateX(0); opacity: 1; }
-}
-
-@keyframes slideOut {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(100%); opacity: 0; }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
+/* ======== RESPONSIVIDADE ======== */
 @media (max-width: 600px) {
   .app-container {
     width: 95%;
@@ -315,4 +299,3 @@ body.dark-mode .answer-btn.wrong {
     font-size: 15px;
   }
 }
-
